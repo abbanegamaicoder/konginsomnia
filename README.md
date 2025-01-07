@@ -1,4 +1,12 @@
 # konginsomnia
+Acceptance Criteria for “ALL TEAMS Execute Workflow”:
+	•	Scenario: Trigger the workflow for all teams when the input is -1.
+	•	Given: The input value for teams is -1 and the entity contains fields like BE, BUK, etc.
+	•	When: The workflow execution is initiated.
+	•	Then: The workflow is triggered for all teams and processes all fields in the specified entity.
+
+
+
 Acceptance Criteria for “Withdraw Workflow Issue Fixed”:
 	•	Scenario: Ensure the workflow completes correctly when either the Submitter withdraws or the Approver takes action.
 	•	Given: A workflow with Submitter and Approver user tasks is active.
