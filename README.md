@@ -1,6 +1,7 @@
 # konginsomnia
 
-
+Closing Comment:
+Implemented a new “Withdraw” state for the submitter in the child workflow, allowing them to withdraw a request. Added logic to dynamically abort or suspend the approver’s or submitter’s user task based on actions taken on either task. After analysis, found that the Suspend API caused the process instance to remain active despite reaching the end node. Resolved the issue by ensuring proper task completion and process termination.
 Conference Page Documentation for New Joiners: Introduction to jBPM (Business Central)
 
 Welcome to the jBPM (Business Central) platform! This document serves as a guide for new joiners to understand and get started with jBPM, which is deployed on BAM. It includes details about accessing the system, creating projects, and understanding key components like DRL files, business processes, and data objects.
