@@ -1,4 +1,12 @@
 # konginsomnia
+Acceptance Criteria for “Withdraw Workflow Issue Fixed”:
+	•	Scenario: Ensure the workflow completes correctly when either the Submitter withdraws or the Approver takes action.
+	•	Given: A workflow with Submitter and Approver user tasks is active.
+	•	When: Either the Submitter withdraws or the Approver takes action.
+	•	Then: The corresponding user task is completed, the other user task is aborted or suspended, and the workflow reaches the end node and completes successfully.
+
+
+
 Closing Comment for Request Approved:
 Implemented and tested the “Request Approved” functionality by identifying approvers, generating task IDs via the task generation API, and ensuring task creation and completion through the workflow. Verified the solution across scenarios and inputs (e.g., CA, additional role, watch list) for multiple teams, confirming approval tasks work as expected. Used enum 12 for approval. Exposed all relevant task APIs to the gateway, meeting the acceptance criteria.
 
