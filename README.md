@@ -1,1 +1,1 @@
-
+Closing Comment: Analyzed the steps to integrate CSM into the SWPPM Gateway microservice from a Java and Spring Framework perspective. Reviewed information from various sources and started documenting the integration approach. This documentation will serve as a reference to streamline the integration process once the SWPPM Gateway migration from .NET Core to Java is complete. Closing this JIRA.
