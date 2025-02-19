@@ -1,1 +1,7 @@
-Closing Comment: Analyzed the steps to integrate CSM into the SWPPM Gateway microservice from a Java and Spring Framework perspective. Reviewed information from various sources and started documenting the integration approach. This documentation will serve as a reference to streamline the integration process once the SWPPM Gateway migration from .NET Core to Java is complete. Closing this JIRA.
+Acceptance Criteria for “JBPM Store, Execute Custom Query Through Jenkins Job”
+
+Scenario Storing and executing a custom query in jBPM through a Jenkins job.
+
+Given A user has a valid custom query and access to store and execute it in jBPM through Jenkins.
+When The user triggers the Jenkins job to store and execute the query.
+Then The query should be stored in jBPM, executed successfully, and the results or an error message should be logged.
