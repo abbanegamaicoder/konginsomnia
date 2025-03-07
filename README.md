@@ -1,4 +1,87 @@
-Analysis of Approaches for Automating jBPM Query Storage and Execution Using Jenkins and GitLab CI/CD
+Here’s a Drools Rule (DRL file) to implement the rule logic for checking the Primary or Additional CST and determining whether the Securitization Methodologies field should be populated.
+
+⸻
+
+Rule Explanation:
+	1.	Input Data:
+	•	The Group ID, Primary CST, and Additional CSTs are passed from the application.
+	2.	Rule Logic:
+	•	If Primary CST or Additional CST 1/2 belongs to the specified list of 7 CSTs, the rule sets a flag (secFlag) as True.
+	3.	Output Data:
+	•	The rule will return secFlag = True when the condition is met.
+	4.	Integration:
+	•	This DRL rule will be configured in jBPM Rule Engine, and the application will consume its output.
+
+⸻
+
+DRL Rule: SecuritizationMethodology.drl
+
+package com.rules.securitization;
+
+import com.model.FacilityDetails;
+
+rule "Check Securitization Methodologies"
+when
+    // FacilityDetails object contains the Group's CST information
+    $facility : FacilityDetails( 
+        primaryCST in ("CRMD INDIA", "CRMD SECURITISTN EUR", "CRMDNY HEDGE FUNDS", 
+                       "CRMDNY SECURITIZATN", "CRMDNY SAM IB US LEG", 
+                       "BUK-CCR-FI'S&SOV", "IB-BE SECURITISATN")
+        || additionalCST1 in ("CRMD INDIA", "CRMD SECURITISTN EUR", "CRMDNY HEDGE FUNDS", 
+                              "CRMDNY SECURITIZATN", "CRMDNY SAM IB US LEG", 
+                              "BUK-CCR-FI'S&SOV", "IB-BE SECURITISATN")
+        || additionalCST2 in ("CRMD INDIA", "CRMD SECURITISTN EUR", "CRMDNY HEDGE FUNDS", 
+                              "CRMDNY SECURITIZATN", "CRMDNY SAM IB US LEG", 
+                              "BUK-CCR-FI'S&SOV", "IB-BE SECURITISATN")
+    )
+then
+    // Set securitization flag to true
+    $facility.setSecFlag(true);
+    System.out.println("Securitization Methodologies field is enabled for Group ID: " + $facility.getGroupId());
+end
+
+
+
+⸻
+
+Steps to Implement in jBPM
+	1.	Define Model Class (FacilityDetails.java)
+Ensure your model has appropriate fields:
+
+public class FacilityDetails {
+    private int groupId;
+    private String primaryCST;
+    private String additionalCST1;
+    private String additionalCST2;
+    private boolean secFlag;
+    
+    // Getters and Setters
+}
+
+
+	2.	Load the Rule Engine in jBPM
+	•	Add the rule to your jBPM project.
+	•	Use the KIE session to execute rules against incoming data.
+	3.	Application Consumption
+	•	The output (secFlag) is used by the Facility Details Screen to populate the field accordingly.
+
+⸻
+
+Expected Output
+
+Group ID	Primary CST	Additional CST 1	Additional CST 2	SecFlag
+10339	CRMD INDIA	XYZ	ABC	True
+20321	ABC	DEF	XYZ	False
+40567	IB-BE SECURITISATN	XYZ	ABC	True
+
+
+
+⸻
+
+This Drools rule ensures that the Securitization Methodologies field is enabled only when the given Primary or Additional CSTs match the allowed 7 CSTs. Let me know if you need modifications or explanations!
+
+
+nalysis of Approaches for Automating jBPM Query Storage and Execution Using Jenkins and GitLab CI/CD
 
 For automating the storage and execution of jBPM custom queries, we have two possible approaches: Jenkins Job and GitLab CI/CD Pipeline. Below is a detailed analysis of both pathways, including the implementation steps, advantages, limitations, and a recommendation on the best approach.
 
