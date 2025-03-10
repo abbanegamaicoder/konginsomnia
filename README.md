@@ -1,3 +1,71 @@
+System.out.println("Getting InputType-outputResponse.getRequestStatus());");
+kcontext.setVariable("action", outputResponse.getRequestStatus());
+
+boolean IsApp = false;
+
+java.util.List<String> approversList = new java.util.ArrayList<>();
+java.util.List<String> approverList = new java.util.ArrayList<>();
+
+System.out.println("In Has Task");
+
+java.util.List<Users> app = new java.util.ArrayList<>();
+java.util.List<Users> delegList = new java.util.ArrayList<>();
+
+if (outputResponse != null) {
+    app = outputResponse.getUsers();
+    delegList = outputResponse.getDelegators();
+}
+
+String app_role = null;
+
+if (app == null || app.isEmpty()) {
+    System.out.println("No approvers found in the process variable 'approverList'.");
+    return;
+}
+
+con.barclays.entitlement.InputProcessRequest inputRequest = 
+    (con.barclays.entitlement.InputProcessRequest) kcontext.getVariable("inputRequest");
+
+Submitter submitter = (Submitter) kcontext.getVariable("submitter");
+
+for (Users approver : app) {
+    String app_role_entry = "{ \"UserId\": \"" + approver.getUserID() + "\", \"sarkale\": \"" + approver.getUserRole() + "\" }";
+    
+    if (!approverList.contains(app_role_entry)) {
+        approverList.add(app_role_entry);
+    }
+
+    approversList.add(app_role_entry);
+}
+
+String userinfo = submitter.getUserId(); // Extract user ID from Submitter object
+
+for (Users approver : app) {
+    if (approver.getUserID().equalsIgnoreCase(userinfo)) {
+        IsApp = true;
+        break;
+    }
+}
+
+if (!IsApp) {
+    for (Users delegator : delegList) {
+        if (delegator.getUserID().equalsIgnoreCase(userinfo)) {
+            IsApp = true;
+            break;
+        }
+    }
+}
+
+kcontext.setVariable("IsApp", IsApp);
+kcontext.setVariable("approversList", approversList);
+kcontext.setVariable("approverList", approverList);
+
+} catch (Exception e) {
+    e.printStackTrace();
+    kcontext.setVariable("exception", e.toString());
+}
+
+
 For CST Rule Configuration, we are implementing a rule in the Rule Engine to determine whether the Securitization Methodologies field should be populated based on the Group’s Primary CST or Additional CSTs.
 	•	Data Model: Defines CSTEvaluationRequest, which includes groupId, primaryCST, additionalCST1, and additionalCST2.
 	•	Output Response: Defines CSTEvaluationResponse, which contains a collection of flags (e.g., secFlag) to allow future scalability.
