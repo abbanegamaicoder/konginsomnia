@@ -1,3 +1,178 @@
+
+Here’s a concise and to-the-point comment you can add to your JIRA:
+
+Comment:
+Had a discussion with the application team (Appel and Sagar) regarding the CST Rule Configuration. They suggested that the security flag (Boolean type) should be part of a collection inside a data object to allow scalability for future flags. Based on this, I will modify the DRL rule to return the flag within a structured data object collection instead of a standalone Boolean value. Will proceed with implementing this approach in the Rule Engine.
+
+Let me know if you need any refinements!
+
+
+Stepwise Approach for Configuring the CST Rule in the Rule Engine
+
+1. Understand the Requirements
+	•	The Securitization Methodologies field should be populated only if the Primary CST or Additional CST (1 or 2) of a Group matches any of the 7 predefined CSTs.
+	•	The rule should return a collection of flags inside a data object, not a standalone Boolean flag.
+
+⸻
+
+2. Define the Data Model (Java POJOs)
+
+We need a structured data model to represent the incoming request and the response.
+
+Data Object for CST Rule Evaluation (CSTEvaluationRequest.java)
+
+public class CSTEvaluationRequest {
+    private int groupId;
+    private String primaryCST;
+    private String additionalCST1;
+    private String additionalCST2;
+
+    // Getters and Setters
+}
+
+Data Object for CST Rule Output (CSTEvaluationResponse.java)
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class CSTEvaluationResponse {
+    private int groupId;
+    private Map<String, Boolean> flagCollection = new HashMap<>();
+
+    public CSTEvaluationResponse(int groupId) {
+        this.groupId = groupId;
+    }
+
+    public void addFlag(String flagName, Boolean value) {
+        flagCollection.put(flagName, value);
+    }
+
+    // Getters and Setters
+}
+
+
+
+⸻
+
+3. Write the DRL Rule (CSTRules.drl)
+
+This rule will:
+	1.	Check if any CST (Primary or Additional) matches the allowed 7 CSTs.
+	2.	Set the security flag (secFlag) inside a collection and return it in the response object.
+
+package com.rules.securitization;
+
+import com.model.CSTEvaluationRequest;
+import com.model.CSTEvaluationResponse;
+
+rule "Determine Securitization Methodology Eligibility"
+when
+    $request : CSTEvaluationRequest(
+        primaryCST in ("CRMD INDIA", "CRMD SECURITISTN EUR", "CRMDNY HEDGE FUNDS", 
+                       "CRMDNY SECURITIZATN", "CRMDNY SAM IB US LEG", 
+                       "BUK-CCR-FI'S&SOV", "IB-BE SECURITISATN")
+        || additionalCST1 in ("CRMD INDIA", "CRMD SECURITISTN EUR", "CRMDNY HEDGE FUNDS", 
+                              "CRMDNY SECURITIZATN", "CRMDNY SAM IB US LEG", 
+                              "BUK-CCR-FI'S&SOV", "IB-BE SECURITISATN")
+        || additionalCST2 in ("CRMD INDIA", "CRMD SECURITISTN EUR", "CRMDNY HEDGE FUNDS", 
+                              "CRMDNY SECURITIZATN", "CRMDNY SAM IB US LEG", 
+                              "BUK-CCR-FI'S&SOV", "IB-BE SECURITISATN")
+    )
+then
+    // Create response object and set the securitization flag
+    CSTEvaluationResponse response = new CSTEvaluationResponse($request.getGroupId());
+    response.addFlag("secFlag", true);
+
+    insert(response);
+    System.out.println("Security flag set to True for Group ID: " + $request.getGroupId());
+end
+
+
+
+⸻
+
+4. Configure the Rule in jBPM
+
+a) Add the DRL file to jBPM
+	•	Place the CSTRules.drl file inside src/main/resources/rules/.
+
+b) Set Up the KIE Session in Java
+
+import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.KieContainer;
+import org.kie.api.KieServices;
+
+public class RuleEngineExecutor {
+    public CSTEvaluationResponse evaluateCSTRules(CSTEvaluationRequest request) {
+        KieServices ks = KieServices.Factory.get();
+        KieContainer kContainer = ks.getKieClasspathContainer();
+        KieSession kSession = kContainer.newKieSession("rulesSession");
+
+        kSession.insert(request);
+        CSTEvaluationResponse response = new CSTEvaluationResponse(request.getGroupId());
+        kSession.insert(response);
+        kSession.fireAllRules();
+        kSession.dispose();
+
+        return response;
+    }
+}
+
+
+
+⸻
+
+5. How the Application Will Consume the Rule Engine
+	•	The application will call evaluateCSTRules() with input data.
+	•	The rule will process the data and return a collection of flags.
+	•	The Limit Application will use this response to determine if the Securitization Methodologies field should be shown.
+
+⸻
+
+6. Testing the Rule
+
+JUnit Test Case
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class CSTRuleTest {
+    @Test
+    public void testCSTRule() {
+        CSTEvaluationRequest request = new CSTEvaluationRequest();
+        request.setGroupId(10339);
+        request.setPrimaryCST("CRMD INDIA");
+
+        RuleEngineExecutor executor = new RuleEngineExecutor();
+        CSTEvaluationResponse response = executor.evaluateCSTRules(request);
+
+        assertTrue(response.getFlagCollection().get("secFlag"));
+    }
+}
+
+
+
+⸻
+
+Summary of Steps
+
+Step	Description
+1. Understand Requirements	Define conditions and expected output.
+2. Define Data Model	Create request and response Java objects.
+3. Write the DRL Rule	Implement logic in Drools to check CSTs and set flags in a collection.
+4. Configure in jBPM	Add DRL file, configure KIE session.
+5. Integration with Application	Ensure the response is consumed correctly.
+6. Testing	Write JUnit tests to validate rule execution.
+
+
+
+⸻
+
+This approach ensures the rule is scalable, reusable, and future-proof while aligning with the requirement to return the flag inside a collection.
+
+Let me know if you need any modifications!
+
+
 Here’s a Drools Rule (DRL file) to implement the rule logic for checking the Primary or Additional CST and determining whether the Securitization Methodologies field should be populated.
 
 ⸻
