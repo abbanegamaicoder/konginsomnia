@@ -1,3 +1,10 @@
+For CST Rule Configuration, we are implementing a rule in the Rule Engine to determine whether the Securitization Methodologies field should be populated based on the Group’s Primary CST or Additional CSTs.
+	•	Data Model: Defines CSTEvaluationRequest, which includes groupId, primaryCST, additionalCST1, and additionalCST2.
+	•	Output Response: Defines CSTEvaluationResponse, which contains a collection of flags (e.g., secFlag) to allow future scalability.
+	•	DRL Rule: Checks if any CST matches the 7 predefined CSTs and, if true, sets secFlag = true inside the response collection.
+
+This ensures a structured and scalable approach, making it easier to extend if new flags need to be introduced later.
+
 
 Here’s a concise and to-the-point comment you can add to your JIRA:
 
