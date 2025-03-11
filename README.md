@@ -1,3 +1,80 @@
+System.out.println("Getting InputType--->" + type);
+
+kcontext.setVariable("inputType", type);
+kcontext.setVariable("teamId", inout.getTeamId());
+
+com.barclays.sw_entitlement.RuleOutputResponse outputResponse = inout.getRuleOutputResponse();
+
+if (outputResponse != null) {
+    System.out.println("Getting RequestStatus--->" + outputResponse.getRequestStatus());
+    kcontext.setVariable("action", outputResponse.getRequestStatus());
+}
+
+boolean isAppSub = false;
+
+java.util.List<String> approvers_List = new java.util.ArrayList<>();
+java.util.List<String> approver_ntlm = new java.util.ArrayList<>();
+
+System.out.println("In Human Task-->");
+
+java.util.List<Users> app = new java.util.ArrayList<>();
+java.util.List<Users> delegList = new java.util.ArrayList<>();
+
+if (outputResponse != null) {
+    app = outputResponse.getUsers();
+    delegList = outputResponse.getDelegators();
+}
+
+String app_role = null;
+
+try {
+    if (app == null || app.isEmpty()) {
+        System.out.println("No approvers found in the process variable 'approverList'.");
+        return;
+    }
+
+    // Fix: Fetch submitter as a Users object and cast it correctly
+    Object submitterObj = kcontext.getVariable("submitterId");
+    Users submitterUser = null;
+
+    if (submitterObj instanceof Users) {
+        submitterUser = (Users) submitterObj;
+    } else {
+        System.out.println("Error: submitterId is not an instance of Users class.");
+    }
+
+    for (Users approver : app) {
+        app_role = "{ \"UserId\":\"" + approver.getUserID() + "\", \"UserRole\":\"" + approver.getUserRole() + "\"}";
+
+        if (!approver_ntlm.contains(approver.getUserID())) {
+            approver_ntlm.add(approver.getUserID());
+            approvers_List.add(app_role);
+        }
+
+        String userinfo = approver.getUserID();
+        
+        // Fix: Compare user IDs only if submitterUser is not null
+        if (submitterUser != null && userinfo.equalsIgnoreCase(submitterUser.getUserID())) {
+            isAppSub = true;
+        }
+    }
+
+    // Fix: Check if submitterUser exists in delegate list
+    if (!isAppSub && submitterUser != null) {
+        isAppSub = delegList.contains(submitterUser);
+    }
+
+    kcontext.setVariable("isAutoApprove", isAppSub);
+    kcontext.setVariable("approverList", approvers_List);
+    kcontext.setVariable("approverIds", approver_ntlm);
+
+} catch (Exception e) {
+    e.printStackTrace();
+    kcontext.setVariable("exceptionLog", e.toString());
+}
+
+
+
 System.out.println("Getting InputType-outputResponse.getRequestStatus());");
 kcontext.setVariable("action", outputResponse.getRequestStatus());
 
