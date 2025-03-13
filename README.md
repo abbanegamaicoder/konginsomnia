@@ -15,6 +15,39 @@ when
 then
     // Create a new output object
     CSTLimitsRuleOutput output = new CSTLimitsRuleOutput();
+    
+    // Check if any matching CST is primary and set the secFlag accordingly
+    boolean flag = false;
+    if ($cst.isPrimary) {
+        // Set flag to true if any matching CST is primary
+        flag = true;
+    }
+
+    // Set the secFlag in the output
+    output.setSecFlag(flag);
+
+    // Insert the result back into the working memory
+    insert(output);
+end
+
+
+package com.rules.securitization;
+
+import com.model.CSTLimitsRuleInputOutput;
+import com.model.CSTLimitsRuleOutput;
+
+rule "Check Securitization Methodology Eligibility"
+when
+    // Loop over all CST entries in the input list
+    $input : CSTLimitsRuleInputOutput(cstList != null)
+    $cst : CSTLimitsRuleInputOutput.CSTInput(
+        creditSanctionTeam in ("CRMD INDIA", "CRMD SECURITISTN EUR", "CRMDNY HEDGE FUNDS", 
+                               "CRMDNY SECURITIZATN", "CRMDNY SAM IB US LEG", 
+                               "BUK-CCR-FI'S&SOV", "IB-BE SECURITISATN")
+    )
+then
+    // Create a new output object
+    CSTLimitsRuleOutput output = new CSTLimitsRuleOutput();
     List<CSTLimitsRuleOutput.EntityEntitlement> entitlements = new ArrayList<>();
 
     // Based on the "isPrimary" flag, add to entitlement list
