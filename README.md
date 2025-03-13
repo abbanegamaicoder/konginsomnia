@@ -1,3 +1,81 @@
+
+package com.rules.securitization;
+
+import com.model.CSTLimitsRuleInputOutput;
+import com.model.CSTLimitsRuleOutput;
+
+rule "Check and Set Securitization Methodology Flag"
+when
+    // Loop over all CST entries in the input list
+    $input : CSTLimitsRuleInputOutput(cstList != null)
+    // Check if any CST has a matching creditSanctionTeam
+    $matchingCST : CSTLimitsRuleInputOutput.CSTInput(
+        creditSanctionTeam in ("CRMD INDIA", "CRMD SECURITISTN EUR", "CRMDNY HEDGE FUNDS", 
+                               "CRMDNY SECURITIZATN", "CRMDNY SAM IB US LEG", 
+                               "BUK-CCR-FI'S&SOV", "IB-BE SECURITISATN")
+    )
+then
+    // If any match is found, set secFlag to true
+    CSTLimitsRuleOutput output = new CSTLimitsRuleOutput();
+    output.setSecFlag(true);
+    insert(output);
+    
+    // If no match is found, set secFlag to false
+    // This is achieved by the not condition
+    not CSTLimitsRuleInputOutput.CSTInput(
+        creditSanctionTeam in ("CRMD INDIA", "CRMD SECURITISTN EUR", "CRMDNY HEDGE FUNDS", 
+                               "CRMDNY SECURITIZATN", "CRMDNY SAM IB US LEG", 
+                               "BUK-CCR-FI'S&SOV", "IB-BE SECURITISATN")
+    )
+    // Create an output object with secFlag as false
+    CSTLimitsRuleOutput outputFalse = new CSTLimitsRuleOutput();
+    outputFalse.setSecFlag(false);
+    insert(outputFalse);
+end
+
+
+
+
+package com.rules.securitization;
+
+import com.model.CSTLimitsRuleInputOutput;
+import com.model.CSTLimitsRuleOutput;
+
+rule "Check and Set Securitization Methodology Flag"
+when
+    // Loop over all CST entries in the input list
+    $input : CSTLimitsRuleInputOutput(cstList != null)
+    // Check if any CST has a matching creditSanctionTeam
+    $matchingCST : CSTLimitsRuleInputOutput.CSTInput(
+        creditSanctionTeam in ("CRMD INDIA", "CRMD SECURITISTN EUR", "CRMDNY HEDGE FUNDS", 
+                               "CRMDNY SECURITIZATN", "CRMDNY SAM IB US LEG", 
+                               "BUK-CCR-FI'S&SOV", "IB-BE SECURITISATN")
+    )
+then
+    // If any match is found, set secFlag to true
+    CSTLimitsRuleOutput output = new CSTLimitsRuleOutput();
+    output.setSecFlag(true);
+    insert(output);
+    
+    // If no match is found, set secFlag to false
+    // This is achieved by the not condition
+    not CSTLimitsRuleInputOutput.CSTInput(
+        creditSanctionTeam in ("CRMD INDIA", "CRMD SECURITISTN EUR", "CRMDNY HEDGE FUNDS", 
+                               "CRMDNY SECURITIZATN", "CRMDNY SAM IB US LEG", 
+                               "BUK-CCR-FI'S&SOV", "IB-BE SECURITISATN")
+    )
+    // Create an output object with secFlag as false
+    CSTLimitsRuleOutput outputFalse = new CSTLimitsRuleOutput();
+    outputFalse.setSecFlag(false);
+    insert(outputFalse);
+end
+
+
+
+
+
+
+
 package com.rules.securitization;
 
 import com.model.CSTLimitsRuleInputOutput;
