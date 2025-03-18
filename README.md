@@ -1,4 +1,35 @@
 
+package com.sw.sw_limits;
+
+rule "Check and Set Securitization Methodology Flag"
+    salience 15
+    ruleflow-group "securitization-methodology"
+
+when
+    $input: CSTLimitsRuleInputOutput(cstDetails != null)
+
+    SmatchingCST: CSTLimits (
+        creditSanctionTeam == "CRMD INDIA" || 
+        creditSanctionTeam == "CRPD SECURITISTH EUR" || 
+        creditSanctionTeam == "CRMONY HEDGE FUNDS" || 
+        creditSanctionTeam == "CRMONY SECURITIZAIN" || 
+        creditSanctionTeam == "CRMONY SAN IB US LEG" || 
+        creditSanctionTeam == "BUK-CCR-FI S850V" || 
+        creditSanctionTeam == "IB-BE SECURITISATN"
+    ) from $input.cstDetails
+
+then
+    CSTLimitsRuleOutput output = new CSTLimitsRuleOutput();
+    output.setSecFlag(true);
+
+    insert(output);
+    update(output);
+
+    $input.setCstLimitsRuleOutput(output);
+end
+
+
+-------
 package com.rules.securitization;
 
 import com.model.CSTLimitsRuleInputOutput;
