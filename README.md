@@ -1,3 +1,22 @@
+Here’s a professional closing comment for your JIRA:
+
+⸻
+
+JIRA Closing Comment:
+
+The rule for setting the Securitization Methodology Flag has been successfully implemented and tested. The testing covered the following scenarios:
+	1.	Primary CST is one of the predefined seven teams – The SEC flag is correctly set as expected.
+	2.	Additional CST is one of the predefined seven teams – The SEC flag is correctly set as expected.
+	3.	Neither Primary nor Additional CST belongs to the predefined seven teams – The SEC flag remains unset, as expected.
+	4.	Both Primary and Additional CSTs belong to the predefined seven teams – The SEC flag is correctly set as expected.
+
+All test cases have passed, and the results align with the expected outcomes. The implementation is now complete and ready for closure.
+
+⸻
+
+Let me know if you’d like any refinements!
+
+
 
 package com.sw.sw_limits;
 
