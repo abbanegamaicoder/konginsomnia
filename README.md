@@ -1,5 +1,55 @@
 Here’s a professional closing comment for your JIRA:
 
+package com.sw.sw_limits;
+
+public enum CreditSanctionTeams {
+    CRMD_INDIA,
+    CRMD_SECURITISTN_EUR,
+    CRMDNY_HEDGE_FUNDS,
+    CRMONY_SECURITIZATN,
+    CRMDNY_SAM_IB_US_LEG,
+    BUK_CCR_FI_SOV,
+    IB_BE_SECURITISATN;
+
+    public static boolean contains(String team) {
+        for (CreditSanctionTeams cst : values()) {
+            if (cst.name().equalsIgnoreCase(team.replace(" ", "_"))) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+-----
+
+
+package com.sw.sw_limits;
+
+import java.util.*;
+import com.sw.sw_limits.CreditSanctionTeams;
+
+rule "Check and Set Securitization Methodology Flag False"
+salience 15
+
+when 
+    $rio: CSTLimitsRuleInputOutput(cstRequest != null && cstRequest.size() > 0)
+then
+    List<CSTLimits> cstLimitsList = $rio.getCstRequest(); 
+    CSTLimitsRuleOutput output = new CSTLimitsRuleOutput();
+    boolean temp = false;
+
+    for (CSTLimits cst : cstLimitsList) {
+        if (cst.getCreditSanctionTeam() != null && CreditSanctionTeams.contains(cst.getCreditSanctionTeam())) {
+            temp = true;
+            break;  // No need to check further once found
+        }
+    }
+
+    output.setSecFlag(temp);
+    $rio.setCSTLimitsRuleOutput(output);
+end
+
 ⸻
 
 JIRA Closing Comment:
