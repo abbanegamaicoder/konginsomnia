@@ -1,4 +1,66 @@
-Here’s a professional closing comment for your JIRA:
+package com.sw.sw_glc;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+rule "RULE_1 GLC_PLC: LimitCeiling Validation"
+    ruleflow-group "SM_GLC"
+when
+    // Ensure input object is not null and has entity details
+    $glc: GLCValidationRuleInputOutput(entityDetailsCollection != null && entityDetailsCollection.size() > 0)
+
+    // Extract Entity Details Collection
+    $entityDetails: List<EntityAppetite> from $glc.getEntityDetailsCollection()
+
+    // Iterate through each entity
+    $entity : EntityAppetite() from $entityDetails
+
+    // Extract appetite details
+    $gflDetails: List<AppetiteDetails> from $entity.getGflAppetiteDetails()
+    $thereofPrimary: List<AppetiteDetails> from $entity.getThereOfPrimary()
+    $thereofTradingCollateralized: List<AppetiteDetails> from $entity.getThereOfTradingCollateralized()
+
+    // Validate that we have all required details
+    eval($gflDetails != null && $thereofPrimary != null && $thereofTradingCollateralized != null)
+
+    // Iterate through each Group Financing Limit (TTC Level)
+    $gfl : AppetiteDetails() from $gflDetails
+    $ttcLevelName: String() from $gfl.getTtcLevelName()
+    $currencyId: String() from $gfl.getCurrencyId()
+    $groupFinancingLimit: Double() from $gfl.getProposedLimitCeiling()
+
+    // Compute sum of Primary Limit and Trading Limit
+    $primaryLimitSum: Double() from accumulate(
+        $primary : AppetiteDetails() from $thereofPrimary,
+        sum($primary.getProposedLimitCeiling())
+    )
+    $tradingLimitSum: Double() from accumulate(
+        $trading : AppetiteDetails() from $thereofTradingCollateralized,
+        sum($trading.getProposedLimitCeiling())
+    )
+
+    // Validation Condition: If sum of Primary + Trading is LESS than Group Financing Limit
+    eval(($primaryLimitSum + $tradingLimitSum) < $groupFinancingLimit)
+
+then
+    // Construct validation error message
+    String errorMessage = "Validation Failed: Sum of Primary Limit Ceiling (" + 
+                          $primaryLimitSum + ") and Trading Limit Ceiling (" + 
+                          $tradingLimitSum + ") cannot be less than Group Financing Limit Ceiling (" +
+                          $groupFinancingLimit + ") at TTC Level: " + $ttcLevelName + 
+                          " for entity: " + $entity.getEntityMarker() + " in currency: " + $currencyId;
+
+    // Store validation error
+    GLCValidationRuleOutput output = new GLCValidationRuleOutput();
+    output.setErrorMessage(errorMessage);
+    output.setErrorField("proposedLimitCeiling");  // Highlight exact field in UI
+
+    insert(output);
+    System.out.println(errorMessage);
+end
+
+
+
 
 package com.sw.sw_limits;
 
