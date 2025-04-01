@@ -1,3 +1,79 @@
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+public class GLCValidationMessage implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    public GLCValidationMessage() {
+        // Default constructor
+    }
+
+    // Method to validate a single list of AppetiteDetails
+    public static List<AppetiteDetails> settingValidationMessage(List<AppetiteDetails> appDetails) {
+        List<GLCValidationOutput> validationOutputList = new ArrayList<>();
+        GLCValidationOutput validationOutput = new GLCValidationOutput();
+
+        for (int i = 0; i < appDetails.size(); i++) {
+            for (int j = i + 1; j < appDetails.size(); j++) {
+                if (appDetails.get(i).getProposedLimitCeiling() < appDetails.get(j).getProposedLimitCeiling()) {
+                    validationOutput.setValidationMessage(GLCValidationConstants.PROPOSED_LIMIT_CEILING_MESSAGE);
+                    validationOutput.setValidationControl(GLCValidationConstants.PROPOSED_LIMIT_CEILING_CONTROL);
+
+                    if (!validationOutputList.contains(validationOutput)) {
+                        validationOutputList.add(validationOutput);
+                    }
+
+                    appDetails.get(j).setValidation(validationOutputList);
+                }
+            }
+        }
+        return appDetails;
+    }
+
+    // Method to validate GFL against the sum of Primary + Trading Collateralized Ceilings
+    public static void settingValidationMessage(
+        List<AppetiteDetails> gflDetails,
+        List<AppetiteDetails> thereOfPrimary,
+        List<AppetiteDetails> thereOfTradingCollateralized
+    ) {
+        List<GLCValidationOutput> validationOutputList;
+        GLCValidationOutput validationOutput = new GLCValidationOutput();
+
+        for (int i = 0; i < gflDetails.size(); i++) {
+            double primaryCeiling = (thereOfPrimary != null && i < thereOfPrimary.size()) 
+                                    ? thereOfPrimary.get(i).getProposedLimitCeiling() 
+                                    : 0.0;
+            
+            double tradingCeiling = (thereOfTradingCollateralized != null && i < thereOfTradingCollateralized.size()) 
+                                    ? thereOfTradingCollateralized.get(i).getProposedLimitCeiling() 
+                                    : 0.0;
+
+            double totalCeiling = primaryCeiling + tradingCeiling;
+
+            // ✅ Validation: GFL should NOT be greater than the sum of Primary + Trading
+            if (gflDetails.get(i).getProposedLimitCeiling() > totalCeiling) {
+                validationOutputList = gflDetails.get(i).getValidation();
+                if (validationOutputList == null) {
+                    validationOutputList = new ArrayList<>();
+                }
+
+                validationOutput.setValidationControl(GLCValidationConstants.PROPOSED_LIMIT_CEILING_CONTROL);
+                validationOutput.setValidationMessage(
+                    "GFL ceiling (" + gflDetails.get(i).getProposedLimitCeiling() + 
+                    ") should not be greater than sum of Primary (" + primaryCeiling + 
+                    ") and Trading (" + tradingCeiling + ")."
+                );
+
+                validationOutputList.add(validationOutput);
+                gflDetails.get(i).setValidation(validationOutputList);
+            }
+        }
+    }
+}
+__________
+
 package com.sw.sw_glc;
 
 import java.util.*;
