@@ -12,6 +12,47 @@ when
     )
 then
     List<CSTLimits> cstLimitsList = $rio.getCstRequest();
+    List<CSTTeamData> cstTeamDataList = $rio.getCstValidationTemplate().getCstTeamData();
+
+    // Extract valid CST names from POJO list
+    Set<String> validTeamNames = new HashSet<>();
+    for (CSTTeamData teamData : cstTeamDataList) {
+        if (teamData.getTeamName() != null) {
+            validTeamNames.add(teamData.getTeamName().trim());
+        }
+    }
+
+    boolean atLeastOneMatch = false;
+    for (CSTLimits cst : cstLimitsList) {
+        String team = cst.getCreditSanctionTeam();
+        if (team != null && validTeamNames.contains(team.trim())) {
+            atLeastOneMatch = true;
+            break;
+        }
+    }
+
+    CSTLimitsRuleOutput output = new CSTLimitsRuleOutput();
+    output.setSecFlag(atLeastOneMatch);
+    $rio.setCSTLimitsRuleOutput(output);
+end
+
+
+
+---------------
+package com.sw.sw_limits;
+
+import java.util.*;
+
+rule "RULE_1_LIMITS_SEC_MT: SEC flag is true if any creditSanctionTeam matches template"
+    ruleflow-group "SW_Limits"
+    salience 15
+when
+    $rio: CSTLimitsRuleInputOutput(
+        cstRequest != null && cstRequest.size() > 0,
+        cstValidationTemplate != null && cstValidationTemplate.cstTeamData != null
+    )
+then
+    List<CSTLimits> cstLimitsList = $rio.getCstRequest();
     List<Map<String, Object>> cstTeamDataList = $rio.getCstValidationTemplate().getCstTeamData();
 
     // Build a set of valid team names from template
