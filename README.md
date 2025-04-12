@@ -1,3 +1,32 @@
+BigDecimal primaryCeiling = BigDecimal.ZERO;
+BigDecimal tradingCeiling = BigDecimal.ZERO;
+
+// Handle primaryCeiling calculation
+if (thereOfPrimary != null && appetiteLevel < thereOfPrimary.size()) {
+    double proposed = thereOfPrimary.get(appetiteLevel).getProposedLimitCeiling();
+    primaryCeiling = BigDecimal.valueOf(proposed);
+}
+
+// Handle tradingCeiling calculation
+if (thereOfTradingCollateralized != null && appetiteLevel < thereOfTradingCollateralized.size()) {
+    double proposed = thereOfTradingCollateralized.get(appetiteLevel).getProposedLimitCeiling();
+    tradingCeiling = BigDecimal.valueOf(proposed);
+}
+
+// Total Ceiling = primary + trading
+BigDecimal totalCeiling = primaryCeiling.add(tradingCeiling);
+
+// Compare with gflDetails' proposed limit ceiling
+double proposedLimit = gflDetails.get(appetiteLevel).getProposedLimitCeiling();
+BigDecimal proposedLimitBD = BigDecimal.valueOf(proposedLimit);
+
+if (proposedLimitBD.compareTo(totalCeiling) > 0) {
+    // proposedLimit > totalCeiling
+    // Your logic here
+}
+
+--------
+
 package com.sw.sw_limits;
 
 import java.util.*;
