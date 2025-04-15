@@ -1,3 +1,98 @@
+{
+  "commands": [
+    {
+      "insert": {
+        "object": {
+          "com.sw.sw_limits.CSTLimitsRuleInputOutput": {
+            "cstRequest": [
+              {
+                "cstTeamId": 15.0,
+                "previousCstTeamId": 15.0,
+                "creditSanctionTeam": "CRMD INDIA",
+                "isPrimary": true,
+                "isBBI": "N",
+                "isBI": "Y",
+                "isBUK": "N",
+                "isSC": "N",
+                "isIHC": "N",
+                "isCUSO": "N",
+                "isBAGL": "N",
+                "isIB": "Y",
+                "creId": "INTRANET\\PANTASHI",
+                "sectorHeadId": "intranet\\pantashi",
+                "accId": "intranet\\x01523689",
+                "creName": "Pant, Ashish",
+                "sectorHeadName": "Pant, Ashish",
+                "accName": "intranet\\x01523689",
+                "isSponsor": "N",
+                "isRisk": "N",
+                "isSanction": "Y",
+                "isOperation": "N",
+                "isSales": "N",
+                "isEmployee": "Y",
+                "teamSubTypeId": 3226.0,
+                "teamSubTypeName": "Live Credit",
+                "groupName": "STATE BANK OF INDIA GROUP",
+                "dateLastUpdated": "2025-01-31T13:40:42.4232",
+                "userLastUpdated": "x01523689",
+                "id": 339.0
+              },
+              {
+                "cstTeamId": 1001508.0,
+                "previousCstTeamId": 1001508.0,
+                "creditSanctionTeam": "abcd",
+                "isPrimary": false,
+                "isBBI": "Y",
+                "isBI": "Y",
+                "isBUK": "N",
+                "isSC": "N",
+                "isIHC": "N",
+                "isCUSO": "N",
+                "isBAGL": "N",
+                "isIB": "Y",
+                "creId": "intranet\\x01344345",
+                "sectorHeadId": "intranet\\x01344345",
+                "accId": "",
+                "creName": "M, Madhan Kumar",
+                "sectorHeadName": "M, Madhan Kumar",
+                "accName": "",
+                "isSponsor": "N",
+                "isRisk": "N",
+                "isSanction": "Y",
+                "isOperation": "N",
+                "isSales": "N",
+                "isEmployee": "Y",
+                "teamSubTypeId": 3226.0,
+                "teamSubTypeName": "Live Credit",
+                "groupName": "STATE BANK OF INDIA GROUP",
+                "dateLastUpdated": "2025-02-21T07:42:37.4732",
+                "userLastUpdated": "x01344345",
+                "id": 339.0
+              }
+            ],
+            "cstTeamValidation": {
+              "cstTeamDetails": [
+                { "teamName": "CRMD INDIA", "teamId": 1 },
+                { "teamName": "CRMD SECURITISTN EUR", "teamId": 2 },
+                { "teamName": "CRMDNY HEDGE FUNDS", "teamId": 3 },
+                { "teamName": "CRMDNY SECURITIZATN", "teamId": 4 },
+                { "teamName": "CRMDNY SAM IB US LEG", "teamId": 5 },
+                { "teamName": "BUK - CCR FI'S&SOV", "teamId": 6 },
+                { "teamName": "IB BE SECURITISATN", "teamId": 7 }
+              ]
+            }
+          }
+        },
+        "out-identifier": "perlist"
+      }
+    },
+    {
+      "fire-all-rules": {}
+    }
+  ]
+}
+
+
 rule "LIMITS_SEC_MT: Checking if the creditSanctionTeam is part of predefined CSTs for secFlag"
 ruleflow-group "SW_Limits"
 salience 15
