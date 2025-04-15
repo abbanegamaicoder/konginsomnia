@@ -1,3 +1,15 @@
+boolean tenorCheck = false;
+
+if (b.getProposedTenor() != null && 
+    ((bbplc.getProposedTenor() == null && bbplc.getSanctionedTenor() == null) ||
+
+     (bbplc.getProposedTenor() != null && bbplc.getSanctionedTenor() == null) ||
+
+     (bbplc.getProposedTenor() == null && bbplc.getSanctionedTenor() != null))) {
+    
+    tenorCheck = true;
+}
+-----------
 boolean check = false;
 
 if ((beDetail.getProposedLimitCeiling() != null &&
