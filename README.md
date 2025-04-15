@@ -13,6 +13,34 @@ if ((beDetail.getProposedLimitCeiling() != null &&
 
     || (beDetail.getProposedLimitCeiling() != null &&
         bbplcDetail.getSanctionedLimitCeiling() != null &&
+        beDetail.getProposedLimitCeiling().compareTo(bbplcDetail.getSanctionedLimitCeiling()) > 0 &&
+        !(bbplcDetail.getProposedLimitCeiling() != null &&
+          bbplcDetail.getProposedLimitCeiling().compareTo(BigDecimal.ZERO) == 0 &&
+          bbplcDetail.getSanctionedLimitCeiling().compareTo(BigDecimal.ZERO) > 0))
+
+    || (beDetail.getProposedLimitCeiling() != null &&
+        bbplcDetail.getProposedLimitCeiling() == null &&
+        bbplcDetail.getSanctionedLimitCeiling() != null)) {
+
+    check = true;
+}
+
+----------
+boolean check = false;
+
+if ((beDetail.getProposedLimitCeiling() != null &&
+     (bbplcDetail.getSanctionedLimitCeiling() == null ||
+      bbplcDetail.getSanctionedLimitCeiling().compareTo(BigDecimal.ZERO) <= 0) &&
+     (bbplcDetail.getProposedLimitCeiling() == null ||
+      bbplcDetail.getProposedLimitCeiling().compareTo(BigDecimal.ZERO) <= 0))
+
+    || (beDetail.getProposedLimitCeiling() != null &&
+        bbplcDetail.getProposedLimitCeiling() != null &&
+        beDetail.getProposedLimitCeiling().compareTo(bbplcDetail.getProposedLimitCeiling()) > 0 &&
+        bbplcDetail.getSanctionedLimitCeiling() == null)
+
+    || (beDetail.getProposedLimitCeiling() != null &&
+        bbplcDetail.getSanctionedLimitCeiling() != null &&
         beDetail.getProposedLimitCeiling().compareTo(bbplcDetail.getSanctionedLimitCeiling()) > 0)
 
     || (beDetail.getProposedLimitCeiling() != null &&
