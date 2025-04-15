@@ -1,4 +1,43 @@
-BigDecimal primaryCeiling = BigDecimal.ZERO;
+rule "LIMITS_SEC_MT: Checking if the creditSanctionTeam is part of predefined CSTs for secFlag"
+ruleflow-group "SW_Limits"
+salience 15
+when
+    $rio: CSTLimitsRuleInputOutput(
+        cstRequest != null && cstRequest.size() > 0,
+        cstValidationTemplate != null && cstValidationTemplate.cstTeamData != null
+    )
+
+then
+    List<CSTLimits> cstLimitsList = $rio.getCstRequest();
+    List<CSTTeamData> cstTeamDataList = $rio.getCstValidationTemplate().getCstTeamData();
+    
+    Set<String> validTeamNames = new HashSet<>();
+    for (CSTTeamData teamData : cstTeamDataList) {
+        if (teamData.getTeamName() != null) {
+            validTeamNames.add(teamData.getTeamName().trim());
+        }
+    }
+
+    boolean atLeastOneMatch = false;
+    for (CSTLimits cst : cstLimitsList) {
+        String team = cst.getCreditSanctionTeam();
+        if (team != null && validTeamNames.contains(team.trim())) {
+            atLeastOneMatch = true;
+            break;
+        }
+    }
+
+    CSTLimitsRuleOutput output = new CSTLimitsRuleOutput();
+    output.setSecFlag(atLeastOneMatch);
+    $rio.setCstLimitsRuleOutput(output);
+end
+
+
+
+-------------------//-----------
+BigDecimal primaryCeiling = 
+
+BigDecimal.ZERO;
 BigDecimal tradingCeiling = BigDecimal.ZERO;
 
 // Handle primaryCeiling calculation
