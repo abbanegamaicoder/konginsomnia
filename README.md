@@ -1,3 +1,29 @@
+BigDecimal bValueToCheck = null;
+BigDecimal bbplcValueToCheck = null;
+
+// Resolve bValueToCheck with precedence logic
+if (beDetail.getProposedLimitCeiling() != null && beDetail.getProposedLimitCeiling().compareTo(BigDecimal.ZERO) > 0) {
+    bValueToCheck = beDetail.getProposedLimitCeiling();
+} else if (beDetail.getSanctionedLimitCeiling() != null) {
+    bValueToCheck = beDetail.getSanctionedLimitCeiling();
+}
+
+// Resolve bbplcValueToCheck with precedence logic
+if (bbplcDetail.getProposedLimitCeiling() != null && bbplcDetail.getProposedLimitCeiling().compareTo(BigDecimal.ZERO) > 0) {
+    bbplcValueToCheck = bbplcDetail.getProposedLimitCeiling();
+} else if (bbplcDetail.getSanctionedLimitCeiling() != null) {
+    bbplcValueToCheck = bbplcDetail.getSanctionedLimitCeiling();
+}
+
+// Final check flag logic
+boolean check = false;
+
+if (bValueToCheck == null || bbplcValueToCheck == null || bValueToCheck.compareTo(bbplcValueToCheck) > 0) {
+    check = true;
+}
+
+----------
+
 boolean tenorCheck = false;
 
 if (b.getProposedTenor() != null && 
